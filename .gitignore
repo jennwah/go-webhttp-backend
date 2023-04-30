@@ -2,5 +2,6 @@
 bin/
 /.idea
 .idea
-.env
+environments/
 .vscode
+build/

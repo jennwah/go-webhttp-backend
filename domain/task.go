@@ -2,26 +2,22 @@ package domain
 
 import (
 	"context"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
-)
-
-const (
-	CollectionTask = "tasks"
+	"time"
 )
 
 type Task struct {
-	ID     primitive.ObjectID `bson:"_id" json:"-"`
-	Title  string             `bson:"title" form:"title" binding:"required" json:"title"`
-	UserID primitive.ObjectID `bson:"userID" json:"-"`
+	ID      int64     `json:"-" db:"id"`
+	Title   string    `binding:"required" json:"title" db:"title"`
+	Created time.Time `json:"created" db:"created"`
+	Updated time.Time `json:"updated" db:"updated"`
 }
 
 type TaskRepository interface {
 	Create(c context.Context, task *Task) error
-	FetchByUserID(c context.Context, userID string) ([]Task, error)
+	GetByID(c context.Context, id int64) (Task, error)
 }
 
 type TaskUsecase interface {
 	Create(c context.Context, task *Task) error
-	FetchByUserID(c context.Context, userID string) ([]Task, error)
+	GetByID(c context.Context, id int64) (Task, error)
 }

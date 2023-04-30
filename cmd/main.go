@@ -1,27 +1,31 @@
 package main
 
 import (
-	"time"
+	"log"
 
-	route "github.com/amitshekhariitbhu/go-backend-clean-architecture/api/route"
-	"github.com/amitshekhariitbhu/go-backend-clean-architecture/bootstrap"
 	"github.com/gin-gonic/gin"
+
+	"github.com/jennwah/go-webhttp-backend/api/route"
+	"github.com/jennwah/go-webhttp-backend/config"
+	"github.com/jennwah/go-webhttp-backend/packages/mysql"
 )
 
 func main() {
+	env := config.NewEnv()
 
-	app := bootstrap.App()
+	db, err := mysql.NewClient(mysql.Config{
+		Host: env.DBHost,
+		Port: env.DBPort,
+		User: env.DBUser,
+		Pass: env.DBPass,
+		Name: env.DBName,
+	})
+	if err != nil {
+		log.Fatalf("fail to init db. Err: %v", err)
+	}
+	defer db.Close()
 
-	env := app.Env
-
-	db := app.Mongo.Database(env.DBName)
-	defer app.CloseDBConnection()
-
-	timeout := time.Duration(env.ContextTimeout) * time.Second
-
-	gin := gin.Default()
-
-	route.Setup(env, timeout, db, gin)
-
-	gin.Run(env.ServerAddress)
+	ginServer := gin.Default()
+	route.Setup(env, db, ginServer)
+	ginServer.Run(env.ServerAddress)
 }

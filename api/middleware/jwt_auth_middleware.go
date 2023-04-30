@@ -4,11 +4,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/amitshekhariitbhu/go-backend-clean-architecture/domain"
-	"github.com/amitshekhariitbhu/go-backend-clean-architecture/internal/tokenutil"
 	"github.com/gin-gonic/gin"
+
+	"github.com/jennwah/go-webhttp-backend/domain"
+	"github.com/jennwah/go-webhttp-backend/internal/tokenutil"
 )
 
+// JwtAuthMiddleware is an example middleware for authorizing users' bearer token and setting x-user-id in gin Context
 func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/amitshekhariitbhu/go-backend-clean-architecture/domain"
+	"github.com/jennwah/go-webhttp-backend/domain"
 )
 
 type taskUsecase struct {
@@ -25,8 +25,8 @@ func (tu *taskUsecase) Create(c context.Context, task *domain.Task) error {
 	return tu.taskRepository.Create(ctx, task)
 }
 
-func (tu *taskUsecase) FetchByUserID(c context.Context, userID string) ([]domain.Task, error) {
+func (tu *taskUsecase) GetByID(c context.Context, id int64) (domain.Task, error) {
 	ctx, cancel := context.WithTimeout(c, tu.contextTimeout)
 	defer cancel()
-	return tu.taskRepository.FetchByUserID(ctx, userID)
+	return tu.taskRepository.GetByID(ctx, id)
 }
