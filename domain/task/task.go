@@ -1,4 +1,4 @@
-package domain
+package task
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 
 type Task struct {
 	ID      int64     `json:"-" db:"id"`
-	Title   string    `binding:"required" json:"title" db:"title"`
+	Title   string    `validate:"required,gt=2" json:"title" db:"title"`
 	Created time.Time `json:"created" db:"created"`
 	Updated time.Time `json:"updated" db:"updated"`
 }

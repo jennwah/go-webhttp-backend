@@ -1,22 +1,38 @@
-package controller
+package task
 
 import (
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/jennwah/go-webhttp-backend/domain"
+	taskDomain "github.com/jennwah/go-webhttp-backend/domain/task"
 )
 
 type TaskController struct {
-	TaskUsecase domain.TaskUsecase
+	TaskUsecase   taskDomain.TaskUsecase
+	taskValidator *validator.Validate
+}
+
+func New(taskUseCase taskDomain.TaskUsecase) *TaskController {
+	return &TaskController{
+		taskUseCase,
+		validator.New(),
+	}
 }
 
 func (tc *TaskController) Create(c *gin.Context) {
-	var task domain.Task
+	var task taskDomain.Task
 
 	err := c.ShouldBindJSON(&task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	err = tc.taskValidator.Struct(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return

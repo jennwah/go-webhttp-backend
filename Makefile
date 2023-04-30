@@ -1,4 +1,4 @@
-db_conn = "root:pass@tcp(localhost:3307)/go-backend?tls=false"
+db_conn = "root:pass@tcp(localhost:3306)/go-backend?tls=false"
 
 run-server:
 	go build -o build/app cmd/main.go

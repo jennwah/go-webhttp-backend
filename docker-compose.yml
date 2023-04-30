@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0.31
+    environment:
+      MYSQL_ROOT_PASSWORD: 'pass'
+      MYSQL_DATABASE: 'go-backend'
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    volumes:
+      - ./database/init.sql:/init.sql:ro
+    command: --init-file /init.sql
+  server:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    links:
+      - mysql
+    ports:
+      - "8080:8080"
+    labels:
+      co.elastic.logs/enabled: true
+      co.elastic.logs/json.keys_under_root: true
+      co.elastic.logs/json.overwrite_keys: true
+      co.elastic.logs/json.add_error_key: true
+      co.elastic.logs/json.expand_keys: true

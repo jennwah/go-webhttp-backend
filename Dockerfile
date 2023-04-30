@@ -1,11 +1,6 @@
+# syntax=docker/dockerfile:1
 FROM golang:1.19-alpine
-
-RUN mkdir /app
-
-ADD . /app
-
-WORKDIR /app
-
-RUN go build -o main cmd/main.go
-
-CMD ["/app/main"]
+WORKDIR /workspace
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app ./cmd/main.go
+CMD ["./app"]
