@@ -1,31 +1,13 @@
 version: "3.8"
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: app
-    container_name: app
-    restart: unless-stopped
-    env_file: .env
-    ports:
-      - "$PORT:$PORT"
-    depends_on:
-      - mongodb
-
-  mongodb:
-    image: mongo:6.0
-    container_name: mongodb
-    restart: unless-stopped
-    env_file: .env
+  mysql:
+    image: mysql:8.0.31
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=$DB_USER
-      - MONGO_INITDB_ROOT_PASSWORD=$DB_PASS
+      MYSQL_ROOT_PASSWORD: 'pass'
+      MYSQL_DATABASE: 'go-backend'
     ports:
-      - "$DB_PORT:$DB_PORT"
+      - "3307:3306"
     volumes:
-      - dbdata:/data/db
-
-volumes:
-  dbdata:
+      - ./database/init.sql:/init.sql:ro
+    command: --init-file /init.sql

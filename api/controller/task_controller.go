@@ -2,10 +2,11 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
-	"github.com/amitshekhariitbhu/go-backend-clean-architecture/domain"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/jennwah/go-webhttp-backend/domain"
 )
 
 type TaskController struct {
@@ -15,16 +16,7 @@ type TaskController struct {
 func (tc *TaskController) Create(c *gin.Context) {
 	var task domain.Task
 
-	err := c.ShouldBind(&task)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	userID := c.GetString("x-user-id")
-	task.ID = primitive.NewObjectID()
-
-	task.UserID, err = primitive.ObjectIDFromHex(userID)
+	err := c.ShouldBindJSON(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Message: err.Error()})
 		return
@@ -41,14 +33,15 @@ func (tc *TaskController) Create(c *gin.Context) {
 	})
 }
 
-func (u *TaskController) Fetch(c *gin.Context) {
-	userID := c.GetString("x-user-id")
+func (tc *TaskController) GetByID(c *gin.Context) {
+	taskID := c.Param("taskID")
+	i, _ := strconv.ParseInt(taskID, 10, 64)
 
-	tasks, err := u.TaskUsecase.FetchByUserID(c, userID)
+	task, err := tc.TaskUsecase.GetByID(c, i)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, tasks)
+	c.JSON(http.StatusOK, task)
 }

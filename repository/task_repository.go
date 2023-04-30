@@ -2,52 +2,36 @@ package repository
 
 import (
 	"context"
+	"github.com/pkg/errors"
 
-	"github.com/amitshekhariitbhu/go-backend-clean-architecture/domain"
-	"github.com/amitshekhariitbhu/go-backend-clean-architecture/mongo"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/jmoiron/sqlx"
+
+	"github.com/jennwah/go-webhttp-backend/domain"
 )
 
 type taskRepository struct {
-	database   mongo.Database
-	collection string
+	database *sqlx.DB
 }
 
-func NewTaskRepository(db mongo.Database, collection string) domain.TaskRepository {
+func NewTaskRepository(db *sqlx.DB) domain.TaskRepository {
 	return &taskRepository{
-		database:   db,
-		collection: collection,
+		database: db,
 	}
 }
 
 func (tr *taskRepository) Create(c context.Context, task *domain.Task) error {
-	collection := tr.database.Collection(tr.collection)
-
-	_, err := collection.InsertOne(c, task)
-
-	return err
+	query := `INSERT INTO tasks (title) VALUE (?);`
+	_, err := tr.database.Exec(query, task.Title)
+	if err != nil {
+		return errors.Wrapf(err, "create new task")
+	}
+	return nil
 }
 
-func (tr *taskRepository) FetchByUserID(c context.Context, userID string) ([]domain.Task, error) {
-	collection := tr.database.Collection(tr.collection)
+func (tr *taskRepository) GetByID(c context.Context, id int64) (domain.Task, error) {
+	task := domain.Task{}
+	query := `SELECT t.id, t.title, t.created, t.updated FROM tasks t where t.id = ?;`
+	err := tr.database.Get(&task, query, id)
 
-	var tasks []domain.Task
-
-	idHex, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		return tasks, err
-	}
-
-	cursor, err := collection.Find(c, bson.M{"userID": idHex})
-	if err != nil {
-		return nil, err
-	}
-
-	err = cursor.All(c, &tasks)
-	if tasks == nil {
-		return []domain.Task{}, err
-	}
-
-	return tasks, err
+	return task, err
 }
