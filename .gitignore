@@ -5,3 +5,4 @@ bin/
 environments/
 .vscode
 build/
+volumes/

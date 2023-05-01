@@ -16,6 +16,10 @@ type Env struct {
 	DBUser string `mapstructure:"DB_USER"`
 	DBPass string `mapstructure:"DB_PASS"`
 	DBName string `mapstructure:"DB_NAME"`
+
+	RedisHost string `mapstructure:"REDIS_HOST"`
+	RedisPort string `mapstructure:"REDIS_PORT"`
+	RedisPass string `mapstructure:"REDIS_PASS"`
 }
 
 func NewEnv() *Env {

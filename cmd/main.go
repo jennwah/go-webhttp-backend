@@ -8,6 +8,7 @@ import (
 	"github.com/jennwah/go-webhttp-backend/config"
 	"github.com/jennwah/go-webhttp-backend/packages/logger"
 	"github.com/jennwah/go-webhttp-backend/packages/mysql"
+	"github.com/jennwah/go-webhttp-backend/packages/redis"
 )
 
 func main() {
@@ -27,8 +28,18 @@ func main() {
 	}
 	defer db.Close()
 
+	redisStore, err := redis.NewClient(redis.Config{
+		Host: env.RedisHost,
+		Port: env.RedisPort,
+		Pass: env.RedisPass,
+	})
+	if err != nil {
+		logger.Errorf("fail to init redis store. Err: %v", err)
+	}
+	defer redisStore.Close()
+
 	ginServer := gin.Default()
 	middleware.GlobalMiddlewareSetup(ginServer)
-	route.Setup(env, db, ginServer)
+	route.Setup(env, db, redisStore, ginServer, logger)
 	ginServer.Run(env.ServerAddress)
 }
