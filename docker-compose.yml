@@ -5,7 +5,9 @@ services:
     image: mysql:8.0.31
     environment:
       MYSQL_ROOT_PASSWORD: 'pass'
-      MYSQL_DATABASE: 'go-backend'
+      MYSQL_DATABASE: 'gobackend'
+      MYSQL_USER: 'jennwah'
+      MYSQL_PASS: '1234'
     ports:
       - "3306:3306"
     healthcheck:

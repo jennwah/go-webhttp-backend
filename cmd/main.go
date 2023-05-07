@@ -15,6 +15,7 @@ func main() {
 	env := config.NewEnv()
 	logger := logger.New()
 	logger.Info("started logger")
+	logger.Infof("app started with config: %v", env)
 
 	db, err := mysql.NewClient(mysql.Config{
 		Host: env.DBHost,
