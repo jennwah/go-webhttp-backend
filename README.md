@@ -5,10 +5,11 @@
 - MySQL Database integration
 - Redis Cache integration
 - Docker compose development
+- minikube local development for kubernetes
 - ELK integration for application's logs
 
 
-## To bootstrap service
+## To bootstrap service with docker compose
 
 1. install go dependencies `go get ./...`
 2. run `make run-app` to bootstrap app with docker compose
@@ -32,6 +33,14 @@ curl --location --request GET 'http://localhost:8080/api/v1/task/1' \
 `docker exec -it {redis-container-id} redis-cli` 
 
 `HGET key fields..`
+
+## To bootstrap service with minikube 
+
+1. `brew install minikube`
+2. `minikube start`
+3. `kubectl apply -f {all files in ./kubernetes dir}` 
+4. `kubectl logs -l app=backend/mysql/redis` to debug. `kubectl get pods`, `kubectl describe pods {pod_name}`, `kubectl get deployments`
+5. `minikube service backend -url` to get backend server URL. 
 
 
 ## Reference Gin's [Quick Start Guide] (https://github.com/gin-gonic/gin/blob/master/docs/doc.md)
